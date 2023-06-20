@@ -49,20 +49,20 @@
       transition: opacity 0.2s;
     }
     #bigBlue {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       background-color: blue;
     }
     #bigGreen {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       background-color: green;
     }
     .active {
       opacity: 1;
     }
     .timer {
-      font-size: 6em;
+      font-size: 5.5em;
       margin: 20px;
     }
     .displayBoard {
@@ -342,7 +342,7 @@
       var linkInput = youtubeLink.value;
       var videoId = getVideoId(linkInput);
       if (videoId) {
-        var embedUrl = "https://www.youtube.com/embed/" + videoId;
+        var embedUrl = "https://www.youtube.com/embed/" + videoId + "?playlist=" + videoId + "&loop=1";
         videoFrame.setAttribute("src", embedUrl);
         videoFrame.style.display = "block";
       }
@@ -357,15 +357,17 @@
         return match[2];
       } else if (match && match[3]) {// 匹配到的是直播連結，例如：https://www.youtube.com/live/{video_id}
         return match[3];
-      } else {// 未能匹配到有效的video_id
-        return null;
-      }
+      } else {return null;}
     }
   </script>
   <script>
     if('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/Metronome/sw.js')
         .then(() => {console.log('Service Worker Registered');});
+    }
+    if('wakeLock' in navigator) {
+      navigator.wakeLock.request("screen")
+        .then(() => {console.log('Wake Lock is active!');});
     }
   </script>
 </body>
