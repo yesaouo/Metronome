@@ -1,4 +1,4 @@
-let cacheName = "store-v1.0";
+let cacheName = "store-v1.1";
 var assets = [
     '/Metronome/',
     '/Metronome/index.html',
