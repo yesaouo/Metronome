@@ -1,0 +1,55 @@
+{
+    "name": "節拍器",
+    "short_name": "節拍器",
+    "id": "/Metronome/",
+    "start_url": "/Metronome/",
+    "display": "standalone",
+    "theme_color": "#edf2f4",
+    "background_color": "#edf2f4",
+    "description": "This webpage is a metronome tool that allows users to set the tempo, beats per minute, and special beat intervals. It also includes features such as a timer, alarm, and the option to play YouTube videos.",
+    "icons": [
+      {
+        "src": "img/icons/Metronome48.png",
+        "sizes": "48x48",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "img/icons/Metronome72.png",
+        "sizes": "72x72",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "img/icons/Metronome96.png",
+        "sizes": "96x96",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "img/icons/Metronome144.png",
+        "sizes": "144x144",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "img/icons/Metronome168.png",
+        "sizes": "168x168",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "img/icons/Metronome192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "img/icons/Metronome512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+}
+  

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#edf2f4">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="This webpage is a metronome tool that allows users to set the tempo, beats per minute, and special beat intervals. It also includes features such as a timer, alarm, and the option to play YouTube videos.">
+  <title>節拍器</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" href="img/icons/Metronome48.png">
+  <link rel="apple-touch-icon" href="img/icons/Metronome192.png">
+  <style>
+    *{
+      padding: 0; margin: 0; box-sizing: border-box; font-family: 'Heebo', sans-serif; font-size: 1.1em;
+      user-select: none;
+      -webkit-user-select: none; /* 兼容 WebKit 浏览器 */
+      -moz-user-select: none; /* 兼容 Firefox 浏览器 */
+      -ms-user-select: none; /* 兼容 IE/Edge 浏览器 */
+    }
+    html, body {width: 100%; height: 100%; background-color: #8d99ae;}
+    table {border-collapse: separate; border-spacing: 10px;}
+    dialog {position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);}
+    .container {width: 100%; height: 100%; text-align: center;}
+    .centered-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .controller button, .intervalButtons button {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #stopButton {background-color: #ef233c;}
+    .intervalButtons button {font-size: 24px; padding: 1px 20px;}
+    .beat, .controller {font-size: 32px; font-weight: bold;}
+    .controller {margin-top: 20px;}
+    .beatCount {font-size: 32px; font-weight: bold; width: 360px;}
+    .dot {
+      width: 20px;
+      height: 20px;
+      background-color: black;
+      border-radius: 50%;
+      margin: 0 5px;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+    #bigBlue {
+      width: 40px;
+      height: 40px;
+      background-color: blue;
+    }
+    #bigGreen {
+      width: 40px;
+      height: 40px;
+      background-color: green;
+    }
+    .active {
+      opacity: 1;
+    }
+    .timer {
+      font-size: 6em;
+      margin: 20px;
+    }
+    .displayBoard {
+      width: 100%;
+      padding: 30px;
+      background-color: #edf2f4;
+      flex-direction: column;
+    }
+    .intervalButtons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .slider {
+      width: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .time {font-size: 20px;}
+    .music {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+@media screen and (orientation: landscape) {
+    .displayBoard {
+      height: 100%;
+    }
+}
+@media screen and (orientation: portrait) {
+    .displayBoard {
+      height: 70%;
+    }
+    #frequencyLabel {
+        font-size: 2em;        
+    }
+    .controller {
+        font-size: 3em;
+        margin-top: 100px;
+    }
+    .timer {
+        font-size: 7em;
+    }
+    .settings {
+      height: 30%;
+    }
+    .settings table {
+      transform: scale(1.5);
+    }
+    .dot {
+      width: 30px;
+      height: 30px;
+    }
+    #bigBlue, #bigGreen {
+      width: 60px;
+      height: 60px;
+    }
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="displayBoard centered-box">
+      <div id="frequencyLabel">頻率: 2.00/s</div>
+      <div class="timer" id="timerContainer">00:00:00</div>
+      <div class="beat centered-box">
+        <div class="dot" id="bigBlue"></div>
+        <div class="beatCount centered-box" id="beatCountContainer"></div>
+        <div class="dot" id="bigGreen"></div>
+      </div>
+      <div class="controller centered-box">
+        <button id="stopButton">停止</button>
+        &nbsp;
+        <button id="startButton">開始</button>
+      </div>
+    </div>
+    <div class="settings centered-box">
+      <table>
+        <tr>
+          <td>拍數</td>
+          <td>  
+            <div class="intervalButtons">
+              <button id="decreaseButton">-</button>
+              <span id="intervalLabel">04</span>
+              <button id="increaseButton">+</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>頻率</td>
+          <td> 
+            <input type="range" min="30" max="300" value="120" step="10" class="slider" id="speedSlider">
+          </td>
+        </tr>
+        <tr>
+          <td>音量</td>
+          <td>
+            <input type="range" min="0" max="1" step="0.1" value="0.5" class="slider" id="volumeSlider">
+          </td>
+        </tr>
+        <tr>
+          <td>鬧鐘</td>
+          <td>
+            <div class="intervalButtons">
+                <input type="time" class="time" id="clock">
+                <button class="time" onclick="clearTime()">清除時間</button>
+              </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <img width="64" height="64" alt="music" class="music" src="img/music.png" onclick="dialogYT.showModal();">
+  <dialog id="dialogYT">
+    <div class="centered-box">
+      <div style="flex: 1;">
+        <input type="text" id="youtubeLink" placeholder="輸入 YouTube 連結" style="width: 100%; border: none; font-size: 28px;">
+      </div>
+      <img width="32" height="32" alt="search" src="img/search.png" onclick="loadYouTubeVideo();">
+      <img width="32" height="32" alt="hide" src="img/minus.png" onclick="dialogYT.close();">
+      <img width="32" height="32" alt="close" src="img/remove.png" onclick="closeYT();">
+    </div>
+    <hr>
+    <iframe id="videoFrame" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+  </dialog>
+  <script>
+    var interval;
+    var speed = 500;
+    var beatCount = 1;
+    var specialBeatInterval = 4; // 每 4 拍播放一次特殊音效
+    var volume = 0.5; // 音量大小
+    var timerInterval;
+    var timerCount = 0;
+    const startButton = document.getElementById('startButton');
+
+    function clearTime() {
+      document.getElementById("clock").value = "";
+    }
+
+    function playSound() {
+      var selectedSound = "1";
+      const bigBlue = document.getElementById('bigBlue');
+      const bigGreen = document.getElementById('bigGreen');
+      if (beatCount % specialBeatInterval === 0) {
+        var specialAudio = new Audio(`music/${selectedSound}_special.mp3`);
+        specialAudio.volume = volume;
+        specialAudio.play();
+        bigGreen.classList.add('active');
+      } else {
+        var audio = new Audio(`music/${selectedSound}.mp3`);
+        audio.volume = volume;
+        audio.play();
+        bigGreen.classList.remove('active');
+      }
+      if (beatCount % 2 === 1) {
+        bigBlue.classList.add('active');
+      }else{
+        bigBlue.classList.remove('active');
+      }
+      beatCount++;
+      updateBeatCountDisplay();
+    }
+    
+    function updateBeatCountDisplay() {
+      var beatCountContainer = document.getElementById('beatCountContainer');
+      beatCountContainer.innerHTML = '<div class="dot active"></div>';
+      for (var i = 1; i < specialBeatInterval; i++) {
+        var dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i < beatCount % specialBeatInterval || beatCount % specialBeatInterval == 0) {
+          dot.classList.add('active');
+        }
+        beatCountContainer.appendChild(dot);
+      }
+    }
+    
+    function startMetronome() {
+      startButton.innerHTML = '暫停';
+      interval = setInterval(playSound, speed);
+      startTimer();
+    }
+
+    function pauseMetronome() {
+      startButton.innerHTML = '繼續';
+      clearInterval(interval);
+      stopTimer();
+    }
+
+    function resumeMetronome() {
+      startButton.innerHTML = '暫停';
+      interval = setInterval(playSound, speed);
+      startTimer();
+    }
+    
+    function stopMetronome() {
+      beatCount = 1;
+      timerCount = 0;
+      startButton.innerHTML = '開始';
+      clearInterval(interval);
+      stopTimer();
+      updateTimerDisplay();
+      updateBeatCountDisplay();
+    }
+    
+    function updateIntervalLabel() {
+      var intervalLabel = document.getElementById('intervalLabel');
+      intervalLabel.textContent = ('00' + specialBeatInterval).slice(-2);
+      updateBeatCountDisplay();
+    }
+    
+    function startTimer() {
+      updateTimerDisplay();
+      
+      timerInterval = setInterval(function() {
+        timerCount++;
+        updateTimerDisplay();
+        const inputTime = document.getElementById("clock").value;
+        if (inputTime !== "") {
+          const currentTime = new Date();
+          const currentHour = currentTime.getHours();
+          const currentMinute = currentTime.getMinutes();
+          const inputHour = parseInt(inputTime.split(":")[0]);
+          const inputMinute = parseInt(inputTime.split(":")[1]);
+          if (currentHour == inputHour && currentMinute == inputMinute) {
+            pauseMetronome();
+            document.getElementById("clock").value = "";
+            var audio = new Audio('music/alert.mp3');
+            audio.volume = volume;
+            audio.play();
+          }
+        }
+      }, 1000); // 每秒更新計時器計數
+    }
+    
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+    
+    function updateTimerDisplay() {
+      var timerContainer = document.getElementById('timerContainer');
+      var hours = Math.floor(timerCount / 3600);
+      var minutes = Math.floor((timerCount % 3600) / 60);
+      var seconds = timerCount % 60;
+      var formattedTime = ('00' + hours).slice(-2) + ':' +
+                          ('00' + minutes).slice(-2) + ':' +
+                          ('00' + seconds).slice(-2);
+      timerContainer.textContent = formattedTime;
+    }
+    
+    startButton.addEventListener('click', function() {
+      if (startButton.innerHTML == '開始') {
+        startMetronome();
+      } else if (startButton.innerHTML == '暫停') {
+        pauseMetronome();
+      } else {
+        resumeMetronome();
+      }
+    });
+    
+    document.getElementById('stopButton').addEventListener('click', function() {
+      stopMetronome();
+    });
+    
+    document.getElementById('speedSlider').addEventListener('input', function() {
+      const BPM = this.value;
+      speed = 60000/this.value;
+      document.getElementById('frequencyLabel').innerHTML = '頻率: ' + (BPM/60).toFixed(2) + '/s';
+      if (startButton.innerHTML == '暫停') {
+        pauseMetronome();
+        resumeMetronome();
+      }
+    });
+    
+    document.getElementById('increaseButton').addEventListener('click', function() {
+      specialBeatInterval++;
+      updateIntervalLabel();
+    });
+    
+    document.getElementById('decreaseButton').addEventListener('click', function() {
+      if (specialBeatInterval > 1) {
+        specialBeatInterval--;
+        updateIntervalLabel();
+      }
+    });
+    
+    document.getElementById('volumeSlider').addEventListener('input', function() {
+      volume = this.value;
+    });
+    
+    updateIntervalLabel();
+  </script>
+  <script>
+    const videoFrame = document.getElementById("videoFrame");
+    const youtubeLink = document.getElementById("youtubeLink");
+    function closeYT() {
+      youtubeLink.value = "";
+      videoFrame.removeAttribute("src");
+      dialogYT.close();
+    }
+    function loadYouTubeVideo() {
+      var linkInput = youtubeLink.value;
+      var videoId = getVideoId(linkInput);
+      if (videoId) {
+        var embedUrl = "https://www.youtube.com/embed/" + videoId;
+        videoFrame.setAttribute("src", embedUrl);
+        videoFrame.style.display = "block";
+      }
+      return false;
+    }
+    function getVideoId(url) {
+      var regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=([^\s&?]+))(?:\S+)?|youtu\.be\/([^\s&?]+)|youtube\.com\/live\/([^\s&?]+))(?:\S+)?$/;
+      var match = url.match(regExp);
+      if (match && match[1]) {// 匹配到的是完整連結，例如：https://www.youtube.com/watch?v={video_id}
+        return match[1];
+      } else if (match && match[2]) {// 匹配到的是短網址連結，例如：https://youtu.be/{video_id}
+        return match[2];
+      } else if (match && match[3]) {// 匹配到的是直播連結，例如：https://www.youtube.com/live/{video_id}
+        return match[3];
+      } else {// 未能匹配到有效的video_id
+        return null;
+      }
+    }
+  </script>
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Metronome/sw.js')
+        .then(() => {console.log('Service Worker Registered');});
+    }
+  </script>
+</body>
+</html>
