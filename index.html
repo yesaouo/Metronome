@@ -130,22 +130,22 @@
         <tr>
           <td>頻率</td>
           <td> 
-            <input type="range" min="30" max="300" value="120" step="10" class="slider" id="speedSlider">
+            <input type="range" min="30" max="300" value="120" step="10" class="slider" id="speedSlider" aria-label="speed slider">
           </td>
         </tr>
         <tr>
           <td>音量</td>
           <td>
-            <input type="range" min="0" max="1" step="0.1" value="0.5" class="slider" id="volumeSlider">
+            <input type="range" min="0" max="1" step="0.1" value="0.5" class="slider" id="volumeSlider" aria-label="volume slider">
           </td>
         </tr>
         <tr>
           <td>鬧鐘</td>
           <td>
             <div class="intervalButtons">
-                <input type="time" class="time" id="clock">
-                <button class="time" onclick="clearTime()">Clear</button>
-              </div>
+              <input type="time" class="time" id="clock" aria-label="clock">
+              <button class="time" onclick="clearTime()">Clear</button>
+            </div>
           </td>
         </tr>
       </table>
@@ -154,9 +154,7 @@
   <img width="64" height="64" alt="music" class="music" src="img/music.png" onclick="dialogYT.showModal();">
   <dialog id="dialogYT">
     <div class="centered-box">
-      <div style="flex: 1;">
-        <input type="text" id="youtubeLink" placeholder="輸入 YouTube 連結" style="width: 100%; border: none; font-size: 28px;">
-      </div>
+      <input type="text" id="youtubeLink" placeholder="輸入 YouTube 連結" style="width: 100%; border: none; font-size: 28px;">
       <img width="32" height="32" alt="search" src="img/search.png" onclick="loadYouTubeVideo();">
       <img width="32" height="32" alt="hide" src="img/minus.png" onclick="dialogYT.close();">
       <img width="32" height="32" alt="close" src="img/remove.png" onclick="closeYT();">
@@ -168,8 +166,8 @@
     var interval;
     var speed = 500;
     var beatCount = 1;
-    var specialBeatInterval = 4; // 每 4 拍播放一次特殊音效
-    var volume = 0.5; // 音量大小
+    var specialBeatInterval = 4;
+    var volume = 0.5;
     var timerInterval;
     var timerCount = 0;
     const startButton = document.getElementById('startButton');
