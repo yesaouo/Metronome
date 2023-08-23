@@ -87,7 +87,11 @@
       top: 2%;
       right: 2%;
     }
-
+    #youtubeLink {
+      width: 100%;
+      border: none;
+      font-size: 28px;
+    }
 @media screen and (orientation: landscape) {
     .displayBoard {height: 100%;}
 }
@@ -154,7 +158,7 @@
   <img width="64" height="64" alt="music" class="music" src="img/music.png" onclick="dialogYT.showModal();">
   <dialog id="dialogYT">
     <div class="centered-box">
-      <input type="text" id="youtubeLink" placeholder="輸入 YouTube 連結" style="width: 100%; border: none; font-size: 28px;">
+      <input type="text" id="youtubeLink" placeholder="輸入 YouTube 連結">
       <img width="32" height="32" alt="search" src="img/search.png" onclick="loadYouTubeVideo();">
       <img width="32" height="32" alt="hide" src="img/minus.png" onclick="dialogYT.close();">
       <img width="32" height="32" alt="close" src="img/remove.png" onclick="closeYT();">
@@ -331,14 +335,20 @@
   <script>
     const videoFrame = document.getElementById("videoFrame");
     const youtubeLink = document.getElementById("youtubeLink");
+    let linkInput = localStorage.getItem('link-input');
+    if (linkInput){
+      youtubeLink.value = linkInput;
+    }
     function closeYT() {
       youtubeLink.value = "";
+      localStorage.setItem('link-input', '');
       videoFrame.removeAttribute("src");
       dialogYT.close();
     }
     function loadYouTubeVideo() {
-      var linkInput = youtubeLink.value;
-      var videoId = getVideoId(linkInput);
+      linkInput = youtubeLink.value;
+      localStorage.setItem('link-input', linkInput);
+      let videoId = getVideoId(linkInput);
       if (videoId) {
         var embedUrl = "https://www.youtube.com/embed/" + videoId + "?playlist=" + videoId + "&loop=1";
         videoFrame.setAttribute("src", embedUrl);
